@@ -23,9 +23,7 @@ app.post("/article", (req, res) => {
   }
   
   const formdata = new FormData();
-  // formdata.append("key", process.env.API_KEY);
-  formdata.append("key", "23f9f16ffe60b3fc4598506a691652af");
-  
+  formdata.append("key", process.env.API_KEY);
   formdata.append("txt", req.body.text);
   formdata.append("lang", "en");
 
