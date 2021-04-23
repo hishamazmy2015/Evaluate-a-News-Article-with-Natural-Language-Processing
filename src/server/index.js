@@ -1,8 +1,10 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const Aylien = require("aylien_textapi");
 const dotenv = require("dotenv");
+var FormData = require("form-data");
+const fetch = require("node-fetch");
+
 dotenv.config();
 
 const app = express();
@@ -19,20 +21,26 @@ app.post("/article", (req, res) => {
       message: "Invalid input",
     });
   }
+  const formdata = new FormData();
+  formdata.append("key", process.env.API_KEY);
+  formdata.append("txt", req.body.text);
+  formdata.append("lang", "en");
 
-  new Aylien({
-    application_id: process.env.API_ID,
-    application_key: process.env.API_KEY,
-  }).sentiment(
-    {
-      url: req.body.text,
-    },
-    function (error, response) {
-      res.send(response);
-    }
-  );
+  const requestOptions = {
+    method: "POST",
+    body: formdata,
+    redirect: "follow",
+  };
+  fetch("https://api.meaningcloud.com/sentiment-2.1", requestOptions)
+    .then((response) => res.send(response.json()))
+    .catch((error) => console.log("error", error));
 });
 
+/**
+ *
+ * Listen server port
+ *
+ */
 app.listen(8080, function () {
   console.log("port is 8080");
 });
