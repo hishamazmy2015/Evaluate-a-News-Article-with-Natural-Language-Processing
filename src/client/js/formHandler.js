@@ -1,33 +1,34 @@
 // const userUrl = require("valid-url");
-function handleSubmit(event) {
+async function handleSubmit(event) {
   event.preventDefault();
 
-  var urlAnalysis = document.querySelectorAll("input[name=dataURL]");
 
-  var validUrl = JSON.parse(JSON.stringify(urlAnalysis[0].value));
-
+  var urlAnalysis = document.getElementById('name').value;
+  var validUrl = JSON.parse(JSON.stringify(urlAnalysis));
+  // console.log("urlAnalysis ", urlAnalysis)
   if (Client.validURL(validUrl)) {
-    fetch("http://localhost:8080/article", {
+    const output = await fetch("http://localhost:8080/article", {
       method: "POST",
       credentials: "same-origin",
       mode: "cors",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ text: urlAnalysis[0].value }),
-    })
-      .then((res) => res.json())
-      .then(function (res) {
-        document.querySelector("section.results #polarity").innerHTML =
-          res.polarity;
-        document.querySelector("section.results #sc").innerHTML =
-          res.subjectivity;
-        document.querySelector("section.results #pc").innerHTML =
-          res.polarity_confidence;
-        document.querySelector("section.results #scon").innerHTML =
-          res.subjectivity_confidence;
-        document.querySelector("section.results #excerpt").innerHTML = res.text;
-      });
+      body: JSON.stringify({ text: urlAnalysis }),
+    });
+    const data = await output.json();
+    // console.log("Data ...........................", data);
+    if (data && output.status >= 200 && output.status < 400) {
+      document.getElementById("polarity").innerHTML = data.polarity;
+      document.getElementById("sc").innerHTML = data.subjectivity;
+      document.getElementById("scon").innerHTML = data.polarity_confidence;
+      document.getElementById("excerpt").innerHTML = data.subjectivity_confidence;
+    }
+    try {
+      const data = await res.json();
+    } catch (error) {
+      document.getElementById('error').innerHTML = 'Something went wrong Please try again';
+    }
   } else {
     document.getElementById("errors").innerHTML =
       "URL is wrong try again with valid one !!! ";
