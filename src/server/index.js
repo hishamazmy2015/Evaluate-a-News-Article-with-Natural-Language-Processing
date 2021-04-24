@@ -21,6 +21,7 @@ app.post("/article", (req, res) => {
       message: "Invalid input",
     });
   }
+  
   const formdata = new FormData();
   formdata.append("key", process.env.API_KEY);
   formdata.append("txt", req.body.text);
